@@ -19,19 +19,19 @@
             background: #2d3748;
             padding: 20px;
             border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
             width: 90%;
-            max-width: 400px;
+            max-width: 500px;
             text-align: center;
         }
         .question {
-            font-size: 18px;
+            font-size: 20px;
             font-weight: bold;
-            margin-bottom: 10px;
+            margin-bottom: 15px;
         }
         .options button {
             width: 100%;
-            padding: 10px;
+            padding: 12px;
             margin: 5px 0;
             border: none;
             border-radius: 5px;
@@ -39,9 +39,10 @@
             color: white;
             cursor: pointer;
             transition: background 0.3s;
+            font-size: 16px;
         }
         .options button:hover {
-            background: #718096;
+            background: #63b3ed;
         }
         .correct {
             background: green !important;
@@ -49,36 +50,66 @@
         .wrong {
             background: red !important;
         }
+        .buttons {
+            margin-top: 20px;
+        }
+        .buttons button {
+            padding: 12px 20px;
+            margin: 5px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            background: #3182ce;
+            color: white;
+            font-size: 16px;
+            transition: background 0.3s;
+        }
+        .buttons button:hover {
+            background: #63b3ed;
+        }
+        #score {
+            margin-top: 20px;
+            font-size: 20px;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
     <div class="quiz-container">
         <h1>Quiz App</h1>
         <div id="quiz"></div>
+        <div class="buttons">
+            <button id="preview">Preview</button>
+            <button id="skip">Skip</button>
+            <button id="next">Next</button>
+        </div>
+        <div id="score"></div>
     </div>
 
     <script>
         const questions = [
-            {
-                question: "What is the capital of France?",
-                options: ["Berlin", "Madrid", "Paris", "Lisbon"],
-                answer: "Paris"
-            },
-            {
-                question: "Which planet is known as the Red Planet?",
-                options: ["Earth", "Mars", "Jupiter", "Venus"],
-                answer: "Mars"
-            },
-            {
-                question: "Who wrote 'To Kill a Mockingbird'?",
-                options: ["Harper Lee", "J.K. Rowling", "Ernest Hemingway", "Mark Twain"],
-                answer: "Harper Lee"
-            }
+            { question: "What is the capital of France?", options: ["Berlin", "Madrid", "Paris", "Lisbon"], answer: "Paris" },
+            { question: "Which planet is known as the Red Planet?", options: ["Earth", "Mars", "Jupiter", "Venus"], answer: "Mars" },
+            { question: "Who wrote 'To Kill a Mockingbird'?", options: ["Harper Lee", "J.K. Rowling", "Ernest Hemingway", "Mark Twain"], answer: "Harper Lee" },
+            { question: "What is the largest ocean on Earth?", options: ["Atlantic Ocean", "Indian Ocean", "Arctic Ocean", "Pacific Ocean"], answer: "Pacific Ocean" },
+            { question: "Which country is known as the Land of the Rising Sun?", options: ["China", "Japan", "South Korea", "Thailand"], answer: "Japan" },
+            { question: "What is the boiling point of water in Celsius?", options: ["90°C", "100°C", "110°C", "120°C"], answer: "100°C" },
+            { question: "Who developed the theory of relativity?", options: ["Isaac Newton", "Nikola Tesla", "Albert Einstein", "Stephen Hawking"], answer: "Albert Einstein" },
+            { question: "Which is the smallest planet in our solar system?", options: ["Mercury", "Mars", "Venus", "Pluto"], answer: "Mercury" },
+            { question: "Which continent is known as the 'Dark Continent'?", options: ["Asia", "South America", "Africa", "Europe"], answer: "Africa" },
+            { question: "Who discovered penicillin?", options: ["Marie Curie", "Alexander Fleming", "Louis Pasteur", "Thomas Edison"], answer: "Alexander Fleming" }
         ];
 
+        let currentQuestionIndex = 0;
+        let score = 0;
         const quizContainer = document.getElementById("quiz");
+        const scoreDisplay = document.getElementById("score");
+        const nextButton = document.getElementById("next");
+        const skipButton = document.getElementById("skip");
 
-        questions.forEach((q, index) => {
+        function loadQuestion() {
+            quizContainer.innerHTML = "";
+            const q = questions[currentQuestionIndex];
             const questionElement = document.createElement("div");
             questionElement.classList.add("question");
             questionElement.innerText = q.question;
@@ -91,16 +122,33 @@
                 const button = document.createElement("button");
                 button.innerText = option;
                 button.onclick = () => {
-                    if (option === q.answer) {
-                        button.classList.add("correct");
-                    } else {
-                        button.classList.add("wrong");
+                    if (!document.querySelector(".correct") && !document.querySelector(".wrong")) {
+                        if (option === q.answer) {
+                            button.classList.add("correct");
+                            score++;
+                        } else {
+                            button.classList.add("wrong");
+                        }
                     }
                 };
                 optionsContainer.appendChild(button);
             });
             quizContainer.appendChild(optionsContainer);
-        });
+        }
+
+        nextButton.onclick = skipButton.onclick = () => {
+            if (currentQuestionIndex < questions.length - 1) {
+                currentQuestionIndex++;
+                loadQuestion();
+            } else {
+                quizContainer.innerHTML = "<h2>Quiz Completed!</h2>";
+                scoreDisplay.innerText = `Total Score: ${score}/${questions.length}`;
+                nextButton.style.display = "none";
+                skipButton.style.display = "none";
+            }
+        };
+
+        loadQuestion();
     </script>
 </body>
 </html>
